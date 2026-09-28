@@ -482,7 +482,7 @@ function removeWin(id) {
   a.gold = Math.max(0, a.gold - WIN_REWARDS[a.dailyWins]);
   a.updatedAt = Date.now();
   commitWithFlash(id);
-}  
+}
 
 function addQuest(id) {
   const a = accounts.find(a => a.id === id);
@@ -685,9 +685,14 @@ function renderCard(a) {
       <div class="wins-row">
         <div class="dots">${dots}</div>
         ${winsLabel}
-        ${a.dailyWins < WIN_CUTOFF
-          ? `<button class="btn btn-xs btn-green" style="margin-left:auto" onclick="addWin('${a.id}')">+Win (+${fmt(WIN_REWARDS[a.dailyWins])}g)</button>`
-          : ''}
+        <div style="margin-left:auto; display:flex; gap:.25rem">
+          ${a.dailyWins > 0
+            ? `<button class="btn btn-xs btn-orange" onclick="removeWin('${a.id}')">-</button>`
+            : ''}
+          ${a.dailyWins < WIN_CUTOFF
+            ? `<button class="btn btn-xs btn-green" onclick="addWin('${a.id}')">+Win (+${fmt(WIN_REWARDS[a.dailyWins])}g)</button>`
+            : ''}
+        </div>
       </div>
       ${questSection}
       ${draftSection}
@@ -700,12 +705,10 @@ function renderCard(a) {
 
 // ── Main render ───────────────────────────────────────────────────────────────
 function render() {
-  // cards (rendered in natural array order without automatic reordering)
   const cards = accounts.length
     ? `<div class="cards">${accounts.map(renderCard).join('')}</div>`
     : `<div class="empty">No accounts yet — add one above</div>`;
 
-  // modal
   const modal = showModal ? `
     <div class="overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal">
@@ -763,7 +766,7 @@ function render() {
           <ul>
             <li><b>+ Account</b> — add an account</li>
             <li>Click <b>gold or gems</b> to edit the value directly</li>
-            <li><b>+Win</b> — record a win (gold added automatically)</li>
+            <li><b>+Win</b> / <b>-</b> — record a win or undo an accidental win click (gold is adjusted automatically)</li>
             <li><b>+</b> / <b>Complete quest</b> — manually add a quest or complete one for +500g</li>
             <li><b>Draft (gold / gems)</b> — start a draft, cost is deducted; use the <b>Quick / Premier</b> toggle at the top to set the format</li>
           </ul>
