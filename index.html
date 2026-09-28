@@ -475,6 +475,15 @@ function addWin(id) {
   commitWithFlash(id);
 }
 
+function removeWin(id) {
+  const a = accounts.find(a => a.id === id);
+  if (!a || a.dailyWins <= 0) return;
+  a.dailyWins--;
+  a.gold = Math.max(0, a.gold - WIN_REWARDS[a.dailyWins]);
+  a.updatedAt = Date.now();
+  commitWithFlash(id);
+}  
+
 function addQuest(id) {
   const a = accounts.find(a => a.id === id);
   if (!a || a.quests >= QUEST_MAX) return;
